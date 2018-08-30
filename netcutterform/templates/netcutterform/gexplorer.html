@@ -1,0 +1,377 @@
+{% load staticfiles %}
+<html>
+<head>
+	<title>RPGeNet v2.0 - Retinitis Pigmentosa Gene Network</title>
+	<meta name="description" content="RPGeNet v2.0 - Retinitis Pigmentosa Gene Network: interacting with the network of genes related to retinitis pigmentosa genes.">
+	<meta name="keywords" content="RPGeNet,retinitis pigmentosa,RP,interaction network,retinal disease,driver genes">
+	<link rel="shortcut icon" href="{%  static 'Images/favicon.png' %}">
+	<link rel="stylesheet" href="{% static 'css/style.css' %}">
+	<link rel="stylesheet" href="{% static 'css/cytoscape-navigator.css' %}">
+	<link rel="stylesheet" href="{% static 'css/cytoscape-panzoom.css' %}">
+	<link rel="stylesheet" href="{% static 'css/bootstrap-min.css' %}">
+	<link rel="stylesheet" href="{% static 'css/toggle-switch.css' %}">
+	{% if not_json %}
+		<!-- Uploaded json, positions included -->
+		<script>
+			window.notjson = true;
+		</script>
+	{% elif upload_json %}
+	<!-- Uploaded json, positions included -->
+        <script>
+            window.jsongraph = {{ upload_json|safe }};
+            {% if withpos %}
+            	window.withpos   = true;
+            {% else %}
+            	window.withpos   = false;
+            {% endif %}
+        </script></script>
+    {% elif jsongraph %}
+    <!-- Graph from normal form request, without positions -->
+    	<script>
+            window.jsongraph = {{ jsongraph|safe }};
+            window.withpos   = false;
+        </script></script>
+    {% else %}
+	<!-- No results -->
+		<script type="text/javascript">
+			window.noresults = true;
+		</script> 
+    {% endif %}
+</head>
+
+<body>
+	
+	<!-- CYTOSCAPE VIEWER -->
+	<div id="cyt"></div>
+	<div id="top-indicators">
+
+		<div id="undo-redo-indicator" class="row">
+			<div id="undo-indicator" class="btn btn-default col-sm-5">
+				<span id="undo" class="glyphicon glyphicon-share-alt"></span>
+			</div>
+			<div class="col-sm-2"> </div>
+			<div id="redo-indicator" class="btn btn-default col-sm-5">
+				<span id="redo" class="glyphicon glyphicon-share-alt"></span>
+			</div>
+		</div>
+		
+
+		<!-- INTERACTION LVL INDICATOR -->
+		{% if level != None %}
+			<span id="lvl-indicator-title">Level</span>
+			<div id="lvl-indicator">
+				{% if level == 0 %} 
+					Skeleton
+				{% elif level == 5 %} 
+					WholeGraph
+				{% else %} 
+					{{ level }}
+				{% endif %} 
+			</div>
+			<script>
+				window.level = {{ level }};
+			</script>
+		{% endif %}
+		<span id="exp-indicator-title">Expression</span>
+		<select name="layout" class="layout-dropdown form-control" id="exp-indicator">
+			{% for exp in experiments %}
+				<option {% if exp_id == exp %}selected="selected"{% endif %} class="exp-option">{{ exp }}</option>
+			{% endfor %}
+		</select>
+		
+		<img id="loading" src="{% static 'Images/loading.gif' %}">
+	</div>
+
+	<!-- EXPERIMENT IDENTIFIER -->
+	{% if exp_id %}
+		<script>
+			window.expId = "{{ exp_id }}";
+		</script>
+	{% endif %}
+
+	
+
+	<!-- Get info Card on click -->
+    <!-- Gene Card -->
+    <div id="button-container">
+        <div class="close-overlay" title="Close card">
+            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+        </div>
+    </div>
+    <div class="card-overlay" id="card-overlay"></div>
+
+
+    <!-- SEARCH BAR -->
+    <div id="search-node-container">
+      <div class="input-group">
+        <input type="text" id="search-node-term" class="form-control" placeholder="Search Gene" name="search">
+        <div class="input-group-btn">
+          <a class="info-tooltip" title="Search and highlight gene on graph">
+              <button id="search-node-btn" class="btn btn-default" type="submit">
+              	<i class="glyphicon glyphicon-search"></i>
+              </button>
+          </a>
+          <a class="info-tooltip" title="Remove highlight">
+              <button id="removesearch" class="btn btn-default"> <span class="glyphicon glyphicon-remove"></span></button>
+          </a>
+        </div>
+      </div>
+    </div>
+    
+	<!-- CYTOSCAPE CONTROLS -->
+	<div id="cyt-controls">
+
+		<!-- Top buttons -->
+		<div id="gexplorer-topbtns">
+			<a href="{% url index_view %}"><div class="btn btn-default"><span class="glyphicon glyphicon-home"> </span> Home</div></a>
+			<a href="{% url tutorial %}"><div class="btn btn-default"><span class="glyphicon glyphicon-question-sign"> </span> Tutorial</div></a>
+		</div>
+
+		<!-- Logo -->
+		<div id="gexplorer-logo-container">
+			<img id="gexplorer-logo" src="{% static 'Images/logo.png' %}">
+			<span id="gexplorer-title">RPGeNet</span>
+		</div>
+
+		<!-- On click -->
+		<div class="cyt-controls-block">
+			<span class="cyt-controls-title">On click</span>
+			<fieldset>
+				<div class="switch-toggle switch-candy behaviour-div">
+					<form action="" id="behaviour-form">
+						<input id="radio-props" value="properties" name="behaviour" type="radio" checked>
+						<label class="behaviour-btn" for="radio-props" onclick="">
+							<span class="behaviour-btn-text">Show Properties</span>
+						</label>
+						<input id="radio-add" name="behaviour" type="radio" value="addition">
+						<label class="behaviour-btn" for="radio-add" onclick="">
+							<span class="behaviour-btn-text">Node Addition</span>
+						</label>
+						<input id="radio-delete" value="deletion" name="behaviour" type="radio">
+						<label class="behaviour-btn" for="radio-delete" onclick="">
+							<span class="behaviour-btn-text">Node Deletion</span>
+						</label>
+						<a></a>
+					</form>
+				</div>
+			</fieldset>
+		</div>
+
+		<!-- Layout -->
+		<div class="cyt-controls-block">
+			<span class="cyt-controls-title">Layout</span>
+			<select name="layout" class="layout-dropdown form-control" id="layout">
+				<option class="layout-option">Dagre</option>
+				<option class="layout-option">Cola</option>
+				<option class="layout-option">Euler</option>
+				<option class="layout-option">Klay</option>
+				<option class="layout-option">Cose</option>
+				<option class="layout-option">Arbor</option>
+				<option class="layout-option">Breadthfirst</option>
+				<option class="layout-option">Grid</option>
+				<option class="layout-option">Circle</option>
+				<option class="layout-option">Concentric</option>
+			</select>
+		</div>
+
+		<!-- Change level -->
+		<div class="cyt-controls-block">
+			<div id="get-connections" class="btn btn-default"><img width="40px" src="{% static 'Images/connect-icon.png' %}"> Connect Genes</div>
+		</div>
+
+		<!-- Border size -->
+		<div class="cyt-controls-block">
+			<span class="cyt-controls-title">Border Size</span><br>
+			<div class="row bsize-container-parent">
+				<div class="bsize-container col-sm-1"></div>
+				<div class="bsize-container col-sm-8">
+					<input type="range" name="bsize" id="bsize" value="8" min="1" max="15" step="1" oninput="bsizeOutput.value = bsize.value"/>
+				</div>
+				<div class="bsize-container col-sm-2">
+					<output name="bsizeOutput" id="bsizeOutput">8</output>
+				</div>
+				<div class="bsize-container col-sm-1"></div>
+			</div>
+		</div>
+
+		<!-- Additional Buttons -->
+		<div class="cyt-controls-block">
+			<span class="cyt-controls-title">Controls</span>
+			<br><br>
+			<div class="gexplorer-row row">
+				<div class="gexplorer-col col-sm-3"> </div>
+				<div class="gexplorer-col col-sm-3">
+					<div id="fitscreen-btn" class="gexplorer-btn btn btn-default">
+						<span class="glyphicon glyphicon-fullscreen"></span>
+						<br><span class="gexplorer-btn-txt">Fit</span>
+					</div>
+				</div>
+				<div class="gexplorer-col col-sm-3">
+					<a href="#" id="save-image-link">
+						<div id="save-img" class="gexplorer-btn btn btn-default">
+							<span class="glyphicon glyphicon-picture"></span>
+							<br><span class="gexplorer-btn-txt">Image</span>
+						</div>
+					</a>
+				</div>
+				<div class="gexplorer-col col-sm-3"> </div>
+			</div>
+			<div class="gexplorer-row row">
+				<div class="gexplorer-col col-sm-3"> </div>
+				<div class="gexplorer-col col-sm-3">
+					<div id="export-tbl" class="gexplorer-btn btn btn-default">
+						<span class="glyphicon glyphicon-download-alt"></span>
+						<br><span class="gexplorer-btn-txt">Export</span>
+					</div>
+				</div>
+				<div class="gexplorer-col col-sm-3">
+					<div id="export-json" class="gexplorer-btn btn btn-default">
+						<span class="glyphicon glyphicon-floppy-disk"></span>
+						<br><span class="gexplorer-btn-txt">Save</span>
+					</div>
+				</div>
+				<div class="gexplorer-col col-sm-3"> </div>
+			</div>
+			<div class="gexplorer-row row">
+				<div class="gexplorer-col col-sm-3"> </div>
+				<div class="gexplorer-col col-sm-6">
+					<form enctype="multipart/form-data" method="post" action="{% url upload_graph %}" id="upload-form">
+						{% csrf_token %}
+						<!-- FILE UPLOAD -->
+						<label for="myfile" id="upload-json" class="gexplorer-btn btn btn-default ">
+							<span class="glyphicon glyphicon-cloud-upload"></span>
+							<br><span class="gexplorer-btn-txt">Upload</span>
+						</label>
+						<input style="display:none" type="file" onchange="this.form.submit()" name="myfile" id="myfile" class="upload" style="box-sizing:border-box;">
+						<input style="display:none" type="number" name="upload-level" id="upload-level" value="{{ level }}" min="0" max="5" step="1">
+					</form>
+				</div>
+				<div class="col-sm-3"> </div>
+			</div>
+
+			<hr>
+			<div class="gexplorer-row row">
+				<div class="col-sm-2"> </div>
+				<div class="col-sm-8">
+					<div id="show-legend-btn" class="gexplorer-btn btn btn-default">
+						<span class="glyphicon glyphicon-question-sign"></span>
+						Show Legend
+					</div>
+				</div>
+				<div class="col-sm-2"> </div>
+			</div>
+		</div>
+
+	</div>
+
+
+	<!-- NO RESULTS DIALOGS -->
+	<div id="blur-effect">&nbsp;</div>
+	<div id="no-results-dialog">
+		<h2 id="no-results-title"><span class="glyphicon glyphicon-warning-sign text-danger"></span> No Results</h2>
+		<hr>
+		<div class="row">
+			<div class="col-sm-3">
+				<a href="{% url index_view %}">
+					<div class="btn btn-default"><span class="glyphicon glyphicon-circle-arrow-left"></span> Go Back</div>
+				</a>
+			</div>
+			<div class="vertical-line"></div>
+			<div class="col-sm-8">
+				<form enctype="multipart/form-data" method="post" action="{% url upload_graph %}" id="upload-form2">
+					{% csrf_token %}
+					<div class="col-sm-5">
+						<label for="myfile2" id="upload-json" class="btn btn-default">
+							<span class="glyphicon glyphicon-cloud-upload"></span>
+							<span class="gexplorer-btn-txt">Upload Graph</span>
+						</label>
+						<input style="display:none" type="file" onchange="this.form.submit()" name="myfile" id="myfile2" class="upload" style="box-sizing:border-box;">
+					</div>
+
+					<div class="col-sm-5">
+						<!-- INTERACTION LEVEL -->
+						<label for="upload-level">
+							Interaction level
+						</label>
+						<input type="number" name="upload-level" id="upload-level2" value="0" min="0" max="5" step="1">
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<div id="legend-dialog">
+		<h2>Legend</h2>
+		<hr>
+
+		<div class="row">
+			<div class="col-sm-5">
+				<ul>
+					<li><img class="legend-img" src="{% static 'Images/lvl0.png' %}"> Skeleton</li>
+					<li><img class="legend-img" src="{% static 'Images/lvl1.png' %}"> Level 1</li>
+					<li><img class="legend-img" src="{% static 'Images/lvl2.png' %}"> Level 2</li>
+					<li><img class="legend-img" src="{% static 'Images/lvl3.png' %}"> Level 3</li>
+					<li><img class="legend-img" src="{% static 'Images/lvl4.png' %}"> Level 4</li>
+					<li><img class="legend-img" src="{% static 'Images/lvl5.png' %}"> Level 5</li>
+				</ul>
+			</div>
+			<div class="col-sm-7">
+				<ul>
+					<li><img class="legend-img" src="{% static 'Images/syndromic.png' %}"> Syndromic driver</li>
+					<li><img class="legend-img" src="{% static 'Images/non-syndromic.png' %}"> Non-Syndromic driver</li>
+					<li><img class="legend-img" src="{% static 'Images/both.png' %}"> Syndromic + Non-Syndromic driver</li>
+				</ul>
+				<hr>
+				<ul>
+					<li><img class="legend-img" src="{% static 'Images/physical.png' %}"> Physical interaction</li>
+					<li><img class="legend-img" src="{% static 'Images/genetic.png' %}"> Genetic interaction</li>
+					<li><img class="legend-img" src="{% static 'Images/unknown.png' %}"> Unknown interaction</li>
+				</ul>
+			</div>
+		
+
+		<div id="close-legend-btn" class="btn btn-danger">
+			<span class="glyphicon glyphicon-remove"></span>
+		</div>
+	</div>
+
+
+	<!-- JAVASCRIPT FILES -->
+	<script src="{% static 'js/jquery-min.js' %}"></script>
+	<script src="{% static 'js/cytoscape.js' %}"></script>
+	<script src="{% static 'js/cytoscape-undo-redo.js' %}"></script>
+	<script src="{% static 'js/cytoscape-navigator.js' %}"></script>
+	<script src="{% static 'js/cytoscape-panzoom.js' %}"></script>
+	<script src="{% static 'js/dagre.js' %}"></script>
+	<script src="{% static 'js/cytoscape-dagre.js' %}"></script>
+	<script src="{% static 'js/klay.js' %}"></script>
+	<script src="{% static 'js/cytoscape-klay.js' %}"></script>
+	<script src="{% static 'js/arbor.js' %}"></script>
+	<script src="{% static 'js/cytoscape-arbor.js' %}"></script>
+	<script src="{% static 'js/cytoscape-euler.js' %}"></script>
+	<script src="{% static 'js/cola.js' %}"></script>
+    <script src="{% static 'js/cytoscape-cola.js' %}"></script>
+	<script src="{% static 'js/bootstrap-min.js' %}"></script>
+	<script src="{% static 'js/stoopidoverlay.js' %}"></script>
+	<script src="{% static 'js/FileSaver.js' %}"></script>
+	<script src="{% static 'js/gexplorer-cytoscape-definition.js' %}"></script>
+	<script src="{% static 'js/app.js' %}"></script>
+	<script src="{% static 'js/card-overlay.js' %}"></script>
+	<script type="text/javascript">
+		if (window.noresults) {
+			$("#blur-effect").show();
+			$("#no-results-dialog").show();
+		};
+
+		$('#show-legend-btn').on("click", function(){
+			$("#legend-dialog").slideToggle(450);
+			$("#blur-effect").show();
+		});
+
+		$('#close-legend-btn').on("click", function(){
+			$("#legend-dialog").hide();
+			$("#blur-effect").hide();
+		});
+	</script>
+</body>
+</html>

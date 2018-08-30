@@ -1,0 +1,147 @@
+{% load staticfiles %}
+<html>
+
+<h2>Interaction 
+	{% for type in interaction.int_type %}
+		<span class="int-{{type}}">[{{type}}]</span> 
+	{% endfor %}
+</h2>
+<hr>
+
+<table class="table table-bordered table-int">
+	<tr>
+		<td>{{ interaction.parent.identifier }}</td>
+		<td><img class="arrow" src="{% static 'Images/arrow.png' %}"></td>
+		<td>{{ interaction.child.identifier }}</td>
+	</tr>
+</table>
+
+<br>
+<h3>Summary</h3>
+<hr>
+<table class="table table-bordered">
+	<tr>
+		<td><b>Level</b></td>
+		{% if interaction.level == 0 %} 
+			<td>Skeleton</td>
+		{% elif interaction.level == 5 %} 
+			<td>WholeGraph</td>
+		{% else %} 
+			<td>{{ interaction.level }}</td>
+		{% endif %} 
+	</tr>
+	<tr>
+		<td><b>Genetic interactions</b></td>
+		<td>{{ interaction.genetic_interaction  }}</td>
+	</tr>
+	<tr>
+		<td><b>Physical interactions</b></td>
+		<td>{{ interaction.physical_interaction }}</td>
+	</tr>
+	<tr>
+		<td><b>PPaxe interactions</b></td>
+		<td>{{ interaction.unknown_interaction  }}</td>
+	</tr>
+</table>
+
+<br>
+<h3>Sources</h3>
+<hr>
+	{% if interaction.biogrid %}
+		<h4>
+			<a href="https://thebiogrid.org/" target="_blank"> 
+				<img src="{% static 'Images/biogrid-logo.png' %}" class="source-logo"> BioGrid
+			</a>
+		</h4>
+		<table class="table table-bordered">
+			<tr>
+				<th>PubMed</th>
+			</th>
+			{% for pmid in interaction.biogrid_pubmedid %}
+				{% if pmid != "NA" %}
+					<tr>
+						<td>
+						<a href="https://www.ncbi.nlm.nih.gov/pubmed/{{ pmid }}" target="_blank">{{ pmid }}</a>
+						</td>
+					</tr>
+				{% endif %}
+			{% endfor %}
+		</table>
+	{% endif %}
+
+	{% if interaction.string %}
+		<h4>
+			<a href="https://string-db.org/" target="_blank">
+				<img src="{% static 'Images/string-logo.png' %}" class="source-logo"> String
+			</a>
+		</h4>
+		<div class="evidence-div">
+			<table class="table table-bordered table-left">
+				<tr>
+					<th>Evidences</th>
+				</th>
+				{% for ev in interaction.string_evidence %}
+					{% if ev != "NA" %}
+						<tr>
+							<td>
+								{{ev}}
+							</td>
+						</tr>
+					{% endif %}
+				{% endfor %}
+			</table>
+			<table class="table table-bordered table-right">
+				<tr>
+					<th>PubMed</th>
+				</th>
+				{% for pmid in interaction.string_pubmedid %}
+					{% if pmid != "NA" %}
+						<tr>
+							<td>
+								<a href="https://www.ncbi.nlm.nih.gov/pubmed/{{ pmid }}" target="_blank">{{ pmid }}</a>
+							</td>
+						</tr>
+					{% endif %}
+				{% endfor %}
+			</table>
+		</div>
+
+	{% endif %}
+	{% if interaction.ppaxe %}
+
+	<div>
+		<h4>
+			<a href="https://compgen.bio.ub.edu/PPaxe" target="_blank">
+				<img src="{% static 'Images/ppaxe-logo.png' %}" class="source-logo"> PPaxe
+			</a>
+		</h4>
+		<table class="table table-bordered table-left">
+			<tr>
+				<th>PPaxe score</th>
+			</th>
+			{% for sc in interaction.ppaxe_score %}
+			<tr>
+				<td>{{ sc }}</td>
+			</tr>
+			{% endfor %}
+		</table>
+
+		<table class="table table-bordered table-right">
+			<tr>
+				<th>PubMed</th>
+			</th>
+			{% for pmid in interaction.ppaxe_pubmedid %}
+				<tr>
+					<td>
+						<a href="https://www.ncbi.nlm.nih.gov/pubmed/{{ pmid }}" target="_blank">{{ pmid }}</a>
+					</td>
+				</tr>
+			{% endfor %}
+		</table>
+	</div>
+	{% endif %}
+
+	<br>
+	<br>
+
+</html>

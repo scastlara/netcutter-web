@@ -1,0 +1,122 @@
+{% load staticfiles %}
+<html>
+
+<h2>{{ gene.identifier }} {% if gene.gene_disease > 0 %} <span class="driver-title">[driver]</span> {% endif %}</h2>
+<hr>
+
+{% if gene.aliases %}
+	<div class="other-names">
+		<span id="other-names-title">Other names:</span> 
+		{% for alias in gene.aliases %}
+			{{ alias }}{% if not forloop.last %}, {% endif %}
+		{% endfor %}
+	</div>
+{% endif %}
+
+<h3>Summary</h3>
+<hr>
+<div class="gene-summary">
+	<p>
+		{{ gene.summary }}
+	</p>
+</div>
+{% if gene.summary_source %}
+	<div class="gene-summary-src">{{ gene.summary_source }}</div>
+{% endif %}
+
+
+<br>
+<h3>Gene Data</h3>
+<hr>
+<table class="table table-bordered">
+	<tr>
+		<td><b>Type</b></td>
+		<td>
+			{% if gene.gene_disease == 0 %}
+				None
+			{% elif gene.gene_disease == 1 %}
+				Syndromic
+			{% elif gene.gene_disease == 2 %}
+				Non-syndromic
+			{% elif gene.gene_disease == 3 %}
+				Syndromic + Non-syndromic
+			{% else %}
+				Unknown
+			{% endif %}
+		</td>
+	<tr>
+		<td><b>Level</b></td>
+		{% if gene.level == 0 %} 
+			<td>Skeleton</td>
+		{% elif gene.level == 5 %} 
+			<td>WholeGraph</td>
+		{% else %} 
+			<td>{{ gene.level }}</td>
+		{% endif %} 
+    </tr>
+	<tr>
+        <td><b>Number of variants</b></td>
+        <td>{{ gene.nvariants }}</td>
+    </tr>
+</table>
+
+
+<br>
+<h3>Expression Data</h3>
+<hr>
+<table class="table table-bordered">
+	{% for exp, value in exp_data.items %}
+		<tr>
+			<td>
+				<b>{{ exp }}</b>
+			</td>
+			<td>
+				{{ value }}
+			</td>
+		</tr>
+	{% endfor %}
+</table>
+
+<br>
+<h3>Gene Ontology</h3>
+<hr>
+<div class="table-go">
+	<table class="table table-bordered">
+		{% if not gene.gos %} None {% endif %}
+		{% for go in gene.gos %}
+			<tr>
+				<td class="{{ go.domain }}">{{ go.domain }}</td>
+				<td><a href="https://www.ebi.ac.uk/QuickGO/GTerm?id={{ go.accession }}" target="_blank" title="Go to A">{{ go.accession }}</a></td>
+				<td>{{ go.description }}</td>
+			</tr>
+		{% endfor %}
+	</table>
+</div>
+
+<br>
+<h3>External links</h3>
+<hr>
+<table class="table table-bordered">
+	<tr>
+		<td>
+			<a target="_blank" href="https://www.genecards.org/cgi-bin/carddisp.pl?gene={{ gene.identifier }}">GeneCards</a>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<a target="_blank" href='http://www.uniprot.org/uniprot/?query={{ gene.identifier }}&fil=organism%3A%22Homo+sapiens+%28Human%29+[9606]%22&sort=score'>UniProt</a>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<a target="_blank" href="http://www.omim.org/search/?index=entry&start=1&limit=10&search={{ gene.identifier }}">OMIM</a>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<a target="_blank" href="https://sph.uth.edu/retnet/sum-dis.htm#A-genes={{ gene.identifier }}">RetNet</a>
+		</td>
+	</tr>
+</table>
+
+</html>
