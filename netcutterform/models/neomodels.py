@@ -548,7 +548,7 @@ class NeoDriver(object):
         return experiments
 
 # NEO4J CONNECTION
-NEO = NeoDriver('localhost', 7474, 7487, 'neo4j', '1234')
+NEO = NeoDriver('0.0.0.0', 7474, 7487, 'neo4j', '1234')
 
 
 # Do this to avoid import errors
