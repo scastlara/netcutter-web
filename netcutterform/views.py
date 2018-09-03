@@ -188,7 +188,7 @@ def shortest_path(request):
     response['appname'] = "Shortest Paths"
     gene1 = request.GET['gene1'].upper()
     gene2 = request.GET['gene2'].upper()
-    if 'exp' in request.GET:
+    if request.GET['exp'] and request.GET['exp'] != "None":
         exp_id = request.GET['exp']
     else:
         exp_id = None
