@@ -15,7 +15,7 @@ framework.
 """
 import os
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "rpgnetv2netcutter-web.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "netcutter-web.settings")
 
 # This application object is used by any WSGI server configured to use this
 # file. This includes Django's development server, if the WSGI_APPLICATION
