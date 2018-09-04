@@ -32,10 +32,14 @@ RUN pip install py2neo==4.0.0;
 RUN pip install matplotlib;
 RUN pip install uwsgi;
 
+RUN echo "HELLO123"
 RUN git clone https://github.com/scastlara/netcutter-web.git;
 RUN dir;
 WORKDIR /netcutter-web
 
 
+
+ENV NETCUTTER_PORT="8000"
+
 EXPOSE 8000
-CMD ["uwsgi", "--http-socket",  ":8000", "--module", "netcutter-web.wsgi:application"]
+CMD ["uwsgi", "--http-socket",  ":8000", "--static-map",  "/static=/netcutter-web/static/", "--module", "netcutter-web.wsgi:application"]
