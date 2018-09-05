@@ -190,7 +190,7 @@ img[class *='-logo-footer']:hover { opacity: 0.8;     }
 @media screen and (min-device-width: 1144px) and (max-width: 1502px) {
 	.app-panel {
 		width: 400px !important;
-		height: 320px !important;
+		height: 200px !important;
 	}
 }
 
@@ -198,7 +198,7 @@ img[class *='-logo-footer']:hover { opacity: 0.8;     }
 	.app-panel {
 		float: none !important;
 		width: 400px !important;
-		height: 320px !important;
+		height: 200px !important;
 		margin-bottom: 15px !important;
 	}
 
@@ -227,7 +227,7 @@ img[class *='-logo-footer']:hover { opacity: 0.8;     }
 
 .app-panel {
 	padding: 2%;
-	height: 285px;
+	height: 200px;
 	text-align: left !important;
 	max-width: 520px;
 	background-image: url('../Images/app-panel.png') !important;

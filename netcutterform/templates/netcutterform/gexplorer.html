@@ -47,11 +47,11 @@
 
 		<div id="undo-redo-indicator" class="row">
 			<div id="undo-indicator" class="btn btn-default col-sm-5">
-				<span id="undo" class="glyphicon glyphicon-share-alt"></span>
+				<img class="icon" src="{% static 'icons/si-glyph-arrow-backward.svg' %}">
 			</div>
 			<div class="col-sm-2"> </div>
 			<div id="redo-indicator" class="btn btn-default col-sm-5">
-				<span id="redo" class="glyphicon glyphicon-share-alt"></span>
+				<img class="icon" src="{% static 'icons/si-glyph-arrow-forward.svg' %}">
 			</div>
 		</div>
 		
@@ -95,7 +95,7 @@
     <!-- Gene Card -->
     <div id="button-container">
         <div class="close-overlay" title="Close card">
-            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+            <span class="cross-icon" aria-hidden="true">x</span>
         </div>
     </div>
     <div class="card-overlay" id="card-overlay"></div>
@@ -108,11 +108,11 @@
         <div class="input-group-btn">
           <a class="info-tooltip" title="Search and highlight gene on graph">
               <button id="search-node-btn" class="btn btn-default" type="submit">
-              	<i class="glyphicon glyphicon-search"></i>
+              	<img class="icon" src="{% static 'icons/si-glyph-magnifier.svg' %}">
               </button>
           </a>
           <a class="info-tooltip" title="Remove highlight">
-              <button id="removesearch" class="btn btn-default"> <span class="glyphicon glyphicon-remove"></span></button>
+              <button id="removesearch" class="btn btn-default"> <img class="icon" src="{% static 'icons/si-glyph-delete.svg' %}"></button>
           </a>
         </div>
       </div>
@@ -123,8 +123,8 @@
 
 		<!-- Top buttons -->
 		<div id="gexplorer-topbtns">
-			<a href="{% url index_view %}"><div class="btn btn-default"><span class="glyphicon glyphicon-home"> </span> Home</div></a>
-			<a href="{% url tutorial %}"><div class="btn btn-default"><span class="glyphicon glyphicon-question-sign"> </span> Tutorial</div></a>
+			<a href="{% url index_view %}"><div class="btn btn-default"><img class="icon" src="{% static 'icons/si-glyph-house.svg' %}"> </span> Home</div></a>
+			<a href="{% url tutorial %}"><div class="btn btn-default"><img class="icon" src="{% static 'icons/si-glyph-circle-help-black.svg' %}"> Tutorial</div></a>
 		</div>
 
 		<!-- Logo -->
@@ -202,14 +202,14 @@
 				<div class="gexplorer-col col-sm-3"> </div>
 				<div class="gexplorer-col col-sm-3">
 					<div id="fitscreen-btn" class="gexplorer-btn btn btn-default">
-						<span class="glyphicon glyphicon-fullscreen"></span>
+						<img class="icon" src="{% static 'icons/si-glyph-arrow-resize-4.svg' %}">
 						<br><span class="gexplorer-btn-txt">Fit</span>
 					</div>
 				</div>
 				<div class="gexplorer-col col-sm-3">
 					<a href="#" id="save-image-link">
 						<div id="save-img" class="gexplorer-btn btn btn-default">
-							<span class="glyphicon glyphicon-picture"></span>
+							<img class="icon" src="{% static 'icons/si-glyph-image.svg' %}">
 							<br><span class="gexplorer-btn-txt">Image</span>
 						</div>
 					</a>
@@ -220,13 +220,13 @@
 				<div class="gexplorer-col col-sm-3"> </div>
 				<div class="gexplorer-col col-sm-3">
 					<div id="export-tbl" class="gexplorer-btn btn btn-default">
-						<span class="glyphicon glyphicon-download-alt"></span>
+						<img class="icon" src="{% static 'icons/si-glyph-file-download.svg' %}">
 						<br><span class="gexplorer-btn-txt">Export</span>
 					</div>
 				</div>
 				<div class="gexplorer-col col-sm-3">
 					<div id="export-json" class="gexplorer-btn btn btn-default">
-						<span class="glyphicon glyphicon-floppy-disk"></span>
+						<img class="icon" src="{% static 'icons/si-glyph-floppy-disk.svg' %}">
 						<br><span class="gexplorer-btn-txt">Save</span>
 					</div>
 				</div>
@@ -239,7 +239,7 @@
 						{% csrf_token %}
 						<!-- FILE UPLOAD -->
 						<label for="myfile" id="upload-json" class="gexplorer-btn btn btn-default ">
-							<span class="glyphicon glyphicon-cloud-upload"></span>
+							<img class="icon" src="{% static 'icons/si-glyph-file-upload.svg' %}">
 							<br><span class="gexplorer-btn-txt">Upload</span>
 						</label>
 						<input style="display:none" type="file" onchange="this.form.submit()" name="myfile" id="myfile" class="upload" style="box-sizing:border-box;">
@@ -254,7 +254,7 @@
 				<div class="col-sm-2"> </div>
 				<div class="col-sm-8">
 					<div id="show-legend-btn" class="gexplorer-btn btn btn-default">
-						<span class="glyphicon glyphicon-question-sign"></span>
+						<img class="icon" src="{% static 'icons/si-glyph-circle-help.svg' %}">
 						Show Legend
 					</div>
 				</div>
@@ -273,7 +273,7 @@
 		<div class="row">
 			<div class="col-sm-3">
 				<a href="{% url index_view %}">
-					<div class="btn btn-default"><span class="glyphicon glyphicon-circle-arrow-left"></span> Go Back</div>
+					<div class="btn btn-default"><img class="icon" src="{% static 'icons/si-glyph-arrow-backward.svg' %}"> Go Back</div>
 				</a>
 			</div>
 			<div class="vertical-line"></div>
@@ -282,7 +282,7 @@
 					{% csrf_token %}
 					<div class="col-sm-5">
 						<label for="myfile2" id="upload-json" class="btn btn-default">
-							<span class="glyphicon glyphicon-cloud-upload"></span>
+							<img class="icon" src="{% static 'icons/si-glyph-file-upload.svg' %}">
 							<span class="gexplorer-btn-txt">Upload Graph</span>
 						</label>
 						<input style="display:none" type="file" onchange="this.form.submit()" name="myfile" id="myfile2" class="upload" style="box-sizing:border-box;">
@@ -331,7 +331,7 @@
 		
 
 		<div id="close-legend-btn" class="btn btn-danger">
-			<span class="glyphicon glyphicon-remove"></span>
+			<span class="cross-icon-">x</span>
 		</div>
 	</div>
 
