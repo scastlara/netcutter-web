@@ -29,7 +29,8 @@ body 			{ font-size: 12px; height: 100vh; }
 }
 
 #app-logo {
-	width: 100px;
+	height: 100%;
+	width: auto;
 }
 
 #app-logo:hover {
