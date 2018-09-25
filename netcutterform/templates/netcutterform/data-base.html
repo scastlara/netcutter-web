@@ -6,6 +6,7 @@
   <link rel="shortcut icon" href="{%  static 'Images/favicon.png' %}">
   <link rel="stylesheet" href="{% static 'css/style.css' %}">
   <link rel="stylesheet" href="{% static 'css/bootstrap-min.css' %}">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.6.3/css/bootstrap-select.min.css" />
 </head>
 
 
@@ -65,12 +66,20 @@
         {% endfor %}
       </select>
 
+      <br>
+      <br>
+      <br>
 
       <h3> Data Information </h3>
+      <hr>
       {% block data-information %}
       {% endblock data-information %}
       
+      <br>
+      <br>
+      <br>
       <h3>Experiments information</h3>
+      <hr>
       {% block experiments-information %}
       {% endblock experiments-information %}
 
